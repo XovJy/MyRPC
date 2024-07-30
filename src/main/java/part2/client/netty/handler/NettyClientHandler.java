@@ -22,7 +22,5 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
     public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable e) throws Exception {
         e.printStackTrace();
         channelHandlerContext.close();
-
     }
-
 }

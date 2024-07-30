@@ -2,6 +2,9 @@ package part2.client.proxy;
 
 import lombok.AllArgsConstructor;
 import part2.client.IOClient;
+import part2.client.rpcclient.RpcClient;
+import part2.client.rpcclient.impl.NettyRpcClient;
+import part2.client.rpcclient.impl.SimpleSocketRpcClient;
 import part2.common.message.RpcRequest;
 import part2.common.message.RpcResponse;
 
@@ -16,8 +19,19 @@ import java.lang.reflect.Proxy;
 public class ClientProxy implements InvocationHandler{
     // 传入参数service接口的class对象，反射包装为一个request
 
-    private String host;
-    private int port;
+    private RpcClient rpcClient;
+
+    public ClientProxy(String host, int port, int choose) {
+        switch (choose) {
+            case 0:
+            default:
+                rpcClient = new NettyRpcClient(host, port);
+                break;
+            case 1:
+                rpcClient = new SimpleSocketRpcClient(host, port);
+                break;
+        }
+    }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -29,7 +43,7 @@ public class ClientProxy implements InvocationHandler{
                 .params(args)
                 .paramsType(method.getParameterTypes())
                 .build();
-        RpcResponse response = IOClient.sendRequest(host, port, request);
+        RpcResponse response = rpcClient.sendRequest(request);
         assert response != null;
         return response.getData();
     }

@@ -6,6 +6,7 @@ import java.util.Map;
 /**
  * @author xuehao
  */
+
 public class ServiceProvider {
 
     private Map<String, Object> interfaceProvider;
